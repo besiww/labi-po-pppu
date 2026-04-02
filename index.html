@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Теннисный менеджер — Симулятор академии</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a3c6e;
+    --dark: #0f2547;
+    --gold: #ffd700;
+    --light: #f4f7fb;
+    --text: #222;
+    --muted: #555;
+    --white: #fff;
+    --green: #2e7d32;
+    --radius: 10px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--text);
+    background: var(--white);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--dark);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 56px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  nav .logo { color: var(--gold); font-weight: 700; font-size: 18px; letter-spacing: 1px; }
+  nav ul { list-style: none; display: flex; gap: 28px; }
+  nav ul a { color: #cde; text-decoration: none; font-size: 14px; transition: color .2s; }
+  nav ul a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 60%, #1e5799 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 80px 20px 60px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '🎾';
+    position: absolute; font-size: 320px; opacity: 0.04;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    color: var(--white); font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800; line-height: 1.2; margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p {
+    color: #b0c4de; font-size: clamp(14px, 2vw, 18px);
+    max-width: 620px; margin-bottom: 36px;
+  }
+  .btn {
+    display: inline-block; padding: 14px 36px;
+    background: var(--gold); color: var(--dark);
+    font-weight: 700; font-size: 15px; border-radius: 30px;
+    text-decoration: none; transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 16px rgba(255,215,0,0.3);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,215,0,0.4); }
+
+  /* SECTIONS */
+  section { padding: 80px 20px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  .section-title {
+    text-align: center; font-size: clamp(22px, 3vw, 32px);
+    color: var(--navy); margin-bottom: 48px; font-weight: 700;
+  }
+  .section-title span { color: var(--gold); }
+
+  /* ABOUT */
+  #about { background: var(--light); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .about-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 28px; border-left: 4px solid var(--gold);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .about-card h3 { color: var(--navy); margin-bottom: 10px; font-size: 17px; }
+  .about-card p { color: var(--muted); font-size: 14px; }
+
+  /* MODULES */
+  #modules { background: var(--white); }
+  .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .module-card {
+    background: var(--light); border-radius: var(--radius);
+    padding: 22px 20px; text-align: center;
+    border-top: 3px solid var(--navy);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .module-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .module-card .icon { font-size: 32px; margin-bottom: 10px; }
+  .module-card h4 { color: var(--navy); font-size: 15px; margin-bottom: 6px; }
+  .module-card p { color: var(--muted); font-size: 13px; }
+
+  /* FEATURES */
+  #features { background: var(--light); }
+  .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feature-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--white); border-radius: var(--radius);
+    padding: 18px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .feature-item .check {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--navy); color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; margin-top: 2px;
+  }
+  .feature-item p { color: var(--muted); font-size: 14px; }
+  .feature-item strong { color: var(--text); display: block; margin-bottom: 2px; }
+
+  /* TECH */
+  #tech { background: var(--white); }
+  .tech-grid { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+  .tech-badge {
+    background: var(--navy); color: var(--white);
+    padding: 10px 22px; border-radius: 30px; font-size: 14px; font-weight: 600;
+  }
+
+  /* BRANCHES */
+  #branches { background: var(--dark); }
+  #branches .section-title { color: var(--white); }
+  .branches-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .branch-card {
+    border-radius: var(--radius); padding: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .branch-card.b1 { background: rgba(26,60,110,0.6); border-top: 3px solid var(--gold); }
+  .branch-card.b2 { background: rgba(46,125,50,0.4); border-top: 3px solid #69f0ae; }
+  .branch-card.b3 { background: rgba(106,27,154,0.4); border-top: 3px solid #ce93d8; }
+  .branch-card h4 { color: var(--white); margin-bottom: 10px; font-size: 15px; }
+  .branch-card p { color: #aaa; font-size: 13px; }
+  .branch-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 700; margin-bottom: 10px;
+  }
+  .b1 .branch-tag { background: var(--gold); color: var(--dark); }
+  .b2 .branch-tag { background: #69f0ae; color: #1b5e20; }
+  .b3 .branch-tag { background: #ce93d8; color: #4a148c; }
+
+  /* FOOTER */
+  footer {
+    background: var(--dark); color: #778; text-align: center;
+    padding: 24px 20px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  @media (max-width: 700px) {
+    .about-grid, .modules-grid, .features-list, .branches-grid { grid-template-columns: 1fr; }
+    nav ul { gap: 14px; }
+    nav { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🎾 Tennis Manager</div>
+  <ul>
+    <li><a href="#about">О проекте</a></li>
+    <li><a href="#modules">Модули</a></li>
+    <li><a href="#features">Механики</a></li>
+    <li><a href="#tech">Технологии</a></li>
+    <li><a href="#branches">Ветки</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <h1>Видео-игра-симулятор<br><span>Теннисного менеджера</span></h1>
+  <p>Управляйте теннисной академией, развивайте игроков, участвуйте в турнирах и стройте путь к вершине мирового тенниса.</p>
+  <a href="#about" class="btn">Узнать больше</a>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <h2 class="section-title">О <span>проекте</span></h2>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>🎯 Цель проекта</h3>
+        <p>Создание полноценной менеджерской симуляции теннисной академии с глубоким управлением карьерой игроков, тактикой и инфраструктурой.</p>
+      </div>
+      <div class="about-card">
+        <h3>👥 Аудитория</h3>
+        <p>Любители спортивных менеджеров, поклонники тенниса и разработчики, изучающие архитектуру игровых симуляторов.</p>
+      </div>
+      <div class="about-card">
+        <h3>🏗️ Архитектура</h3>
+        <p>Модульная архитектура на Python. Каждый модуль отвечает за отдельную область: UI, симуляция матчей, экономика, скаутинг.</p>
+      </div>
+      <div class="about-card">
+        <h3>📊 Масштаб</h3>
+        <p>Более 20 реализуемых механик. Три группы модулей, распределённых по веткам репозитория: UI, ядро слайдов, контент и дизайн.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="container">
+    <h2 class="section-title">Модули <span>системы</span></h2>
+    <div class="modules-grid">
+      <div class="module-card"><div class="icon">📊</div><h4>Дашборд академии</h4><p>Ключевые показатели: бюджет, рейтинг, состав, ближайшие турниры.</p></div>
+      <div class="module-card"><div class="icon">🔍</div><h4>Скаутинг</h4><p>Поиск талантов по позиции, возрасту, рейтингу и региону мира.</p></div>
+      <div class="module-card"><div class="icon">🏆</div><h4>Календарь турниров</h4><p>Расписание событий, карточки турниров, управление участием.</p></div>
+      <div class="module-card"><div class="icon">👤</div><h4>Карточка игрока</h4><p>Характеристики, контракт, история тренировок и динамика роста.</p></div>
+      <div class="module-card"><div class="icon">💼</div><h4>Менеджер карьеры</h4><p>Создание, сохранение и загрузка карьеры. Управление симуляцией.</p></div>
+      <div class="module-card"><div class="icon">🏛️</div><h4>Инфраструктура</h4><p>Стадион, тренировочная база, медцентр — уровни и апгрейды.</p></div>
+      <div class="module-card"><div class="icon">🖼️</div><h4>Слайды</h4><p>Создание презентаций с макетами, мастер-слайдом и элементами.</p></div>
+      <div class="module-card"><div class="icon">🎨</div><h4>Темы оформления</h4><p>Academy Blue, Dark Stadium, Clean White, Trophy Gold.</p></div>
+      <div class="module-card"><div class="icon">📝</div><h4>Контент слайдов</h4><p>Текст, изображения, фигуры, таблицы, аудио и видео.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">Игровые <span>механики</span></h2>
+    <div class="features-list">
+      <div class="feature-item"><div class="check">✓</div><div><strong>Управление академией</strong><p>Создание и развитие теннисной академии с нуля.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Скаутинг и рекрутинг</strong><p>Поиск молодых талантов по всему миру.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Тренировочный процесс</strong><p>Планирование программ, развитие навыков игроков.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Симуляция матчей</strong><p>Расчёт розыгрышей, статистика, тактические решения.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Турниры ATP/WTA/ITF</strong><p>Участие в официальных турнирах и создание своих.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Финансовое управление</strong><p>Бюджет, спонсоры, зарплаты, инвестиции в инфраструктуру.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Система травм</strong><p>Диагностика, лечение, реабилитация, риск перетренированности.</p></div></div>
+      <div class="feature-item"><div class="check">✓</div><div><strong>Случайные события</strong><p>Травмы, кризисы, прорывы молодых игроков.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tech">
+  <div class="container">
+    <h2 class="section-title">Используемые <span>технологии</span></h2>
+    <div class="tech-grid">
+      <span class="tech-badge">Python</span>
+      <span class="tech-badge">Git / GitHub</span>
+      <span class="tech-badge">JSON (сохранения)</span>
+      <span class="tech-badge">Модульная архитектура</span>
+      <span class="tech-badge">ООП</span>
+      <span class="tech-badge">DocBook XML</span>
+      <span class="tech-badge">HTML / CSS</span>
+      <span class="tech-badge">GitHub Pages</span>
+    </div>
+  </div>
+</section>
+
+<!-- BRANCHES -->
+<section id="branches">
+  <div class="container">
+    <h2 class="section-title">Ветки <span style="color:var(--gold)">репозитория</span></h2>
+    <div class="branches-grid">
+      <div class="branch-card b1">
+        <span class="branch-tag">ui-project</span>
+        <h4>Пользовательский интерфейс</h4>
+        <p>Дашборд, календарь турниров, панель скаутинга, карточки игрока и академии, тулбар, менеджер карьеры.</p>
+      </div>
+      <div class="branch-card b2">
+        <span class="branch-tag">slide-core</span>
+        <h4>Ядро слайдов</h4>
+        <p>Классы Slide, SlideLayout, MasterSlide и SlideManager — фундамент системы презентаций.</p>
+      </div>
+      <div class="branch-card b3">
+        <span class="branch-tag">content-design</span>
+        <h4>Контент и дизайн</h4>
+        <p>Текст, изображения, фигуры, таблицы, аудио, видео, темы, цветовые схемы и фоны слайдов.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Видео-игра-симулятор теннисного менеджера &nbsp;|&nbsp; Лабораторные работы по ПППИ &nbsp;|&nbsp; 2024</p>
+</footer>
+
+</body>
+</html>
