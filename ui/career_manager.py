@@ -3,13 +3,31 @@
 import json
 
 class CareerManager:
-    """Управление карьерой: создание, сохранение, загрузка."""
+    """
+    Менеджер карьеры тренера теннисной академии.
+
+    Обеспечивает создание новой карьеры, сохранение и загрузку
+    прогресса, а также доступ к текущему состоянию симуляции.
+
+    Attributes:
+        current_career (Career): Текущая активная карьера или None.
+    """
 
     def __init__(self):
         self.current_career = None
 
     def new_career(self, academy_name, manager_name, difficulty='normal'):
-        # Создать новую карьеру с начальными параметрами
+        """
+        Создать новую карьеру с начальными параметрами.
+
+        Args:
+            academy_name (str): Название академии.
+            manager_name (str): Имя менеджера.
+            difficulty (str): Сложность: 'easy', 'normal', 'hard'.
+
+        Returns:
+            Career: Созданный объект карьеры.
+        """
         self.current_career = Career(
             academy_name=academy_name,
             manager_name=manager_name,
@@ -21,12 +39,28 @@ class CareerManager:
         return self.current_career
 
     def _starting_budget(self, difficulty):
-        # Начальный бюджет зависит от сложности
+        """
+        Определить начальный бюджет по уровню сложности.
+
+        Args:
+            difficulty (str): Уровень сложности.
+
+        Returns:
+            int: Начальный бюджет в условных единицах.
+        """
         budgets = {'easy': 5_000_000, 'normal': 2_000_000, 'hard': 500_000}
         return budgets.get(difficulty, 2_000_000)
 
     def save(self, filepath):
-        # Сериализовать состояние карьеры в JSON и записать на диск
+        """
+        Сохранить текущую карьеру в файл.
+
+        Args:
+            filepath (str): Путь к файлу сохранения.
+
+        Raises:
+            ValueError: Если нет активной карьеры для сохранения.
+        """
         if not self.current_career:
             raise ValueError("Нет активной карьеры для сохранения")
         data = self.current_career.to_dict()
@@ -34,14 +68,28 @@ class CareerManager:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     def load(self, filepath):
-        # Загрузить карьеру из файла сохранения
+        """
+        Загрузить карьеру из файла сохранения.
+
+        Args:
+            filepath (str): Путь к файлу сохранения.
+
+        Returns:
+            Career: Загруженный объект карьеры.
+        """
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
         self.current_career = Career.from_dict(data)
         return self.current_career
 
     def get_simulation_state(self):
-        # Вернуть текущее состояние симуляции (дата, сезон, очередь событий)
+        """
+        Получить текущее состояние симуляции.
+
+        Returns:
+            dict: Словарь с сезоном, датой и очередью событий,
+                  или None если карьера не активна.
+        """
         if not self.current_career:
             return None
         return {
@@ -52,7 +100,23 @@ class CareerManager:
 
 
 class Career:
-    """Модель карьеры тренера в академии."""
+    """
+    Модель карьеры тренера в теннисной академии.
+
+    Хранит все данные карьеры: состав игроков, расписание,
+    финансы, историю результатов и очередь событий.
+
+    Attributes:
+        academy_name (str): Название академии.
+        manager_name (str): Имя менеджера.
+        difficulty (str): Уровень сложности.
+        season (int): Текущий сезон.
+        budget (int): Текущий бюджет.
+        current_date (str): Текущая дата симуляции в формате YYYY-MM-DD.
+        event_queue (list): Очередь предстоящих событий.
+        players (list): Список игроков академии.
+        results (list): История результатов матчей и турниров.
+    """
 
     def __init__(self, academy_name, manager_name, difficulty, season, budget):
         self.academy_name = academy_name
@@ -66,22 +130,36 @@ class Career:
         self.results = []
 
     def initialize(self):
-        # Инициализировать стартовый состав, расписание и начальную дату
+        """Инициализировать стартовый состав, расписание и начальную дату."""
         self.current_date = '2024-07-01'
         self.players = self._generate_starting_squad()
         self.event_queue = self._generate_season_schedule()
 
     def _generate_starting_squad(self):
-        # Сгенерировать стартовый состав из молодых игроков
-        # Возвращает список объектов Player
+        """
+        Сгенерировать стартовый состав из молодых игроков.
+
+        Returns:
+            list: Список объектов Player.
+        """
         return []
 
     def _generate_season_schedule(self):
-        # Сгенерировать расписание турниров и тренировок на сезон
+        """
+        Сгенерировать расписание турниров и тренировок на сезон.
+
+        Returns:
+            list: Список событий сезона.
+        """
         return []
 
     def to_dict(self):
-        # Сериализовать карьеру в словарь для сохранения
+        """
+        Сериализовать карьеру в словарь для сохранения.
+
+        Returns:
+            dict: Словарь с данными карьеры.
+        """
         return {
             'academy_name': self.academy_name,
             'manager_name': self.manager_name,
@@ -95,7 +173,15 @@ class Career:
 
     @classmethod
     def from_dict(cls, data):
-        # Восстановить карьеру из словаря
+        """
+        Восстановить карьеру из словаря.
+
+        Args:
+            data (dict): Словарь с данными карьеры.
+
+        Returns:
+            Career: Восстановленный объект карьеры.
+        """
         career = cls(
             academy_name=data['academy_name'],
             manager_name=data['manager_name'],
@@ -105,5 +191,4 @@ class Career:
         )
         career.current_date = data['current_date']
         career.results = data.get('results', [])
-        # career.players = [Player.from_dict(p) for p in data.get('players', [])]
         return career

@@ -1,20 +1,38 @@
 # theme.py — Тема оформления презентации
 
 class Theme:
-    """Тема: набор цветов, шрифтов и фона для презентации академии."""
+    """
+    Тема оформления презентации академии.
 
-    # Встроенные темы
+    Объединяет цветовую схему, схему шрифтов и фон в единый
+    стилевой пакет, который применяется к мастер-слайду.
+
+    Attributes:
+        name (str): Название темы.
+        color_scheme: Объект ColorScheme или None.
+        font_scheme: Объект FontScheme или None.
+        background: Объект Background или None.
+    """
+
     PRESETS = ['academy_blue', 'dark_stadium', 'clean_white', 'trophy_gold']
 
     def __init__(self, name='academy_blue'):
         self.name = name
-        self.color_scheme = None    # объект ColorScheme
-        self.font_scheme = None     # объект FontScheme
-        self.background = None      # объект Background
+        self.color_scheme = None
+        self.font_scheme = None
+        self.background = None
 
     @classmethod
     def from_preset(cls, preset_name):
-        # Создать тему из встроенного пресета
+        """
+        Создать тему из встроенного пресета.
+
+        Args:
+            preset_name (str): Название пресета из списка PRESETS.
+
+        Returns:
+            Theme: Готовый объект темы.
+        """
         theme = cls(name=preset_name)
         theme.color_scheme = ColorScheme.preset(preset_name)
         theme.font_scheme = FontScheme.preset(preset_name)
@@ -22,13 +40,25 @@ class Theme:
         return theme
 
     def apply_to_master(self, master):
-        # Применить тему к мастер-слайду
+        """
+        Применить тему к мастер-слайду.
+
+        Args:
+            master (MasterSlide): Мастер-слайд для применения темы.
+        """
         master.color_scheme = self.color_scheme
         master.font_scheme = self.font_scheme
         master.background = self.background
 
     def customize(self, primary_color=None, font_name=None, bg_color=None):
-        # Точечно изменить параметры темы
+        """
+        Точечно изменить параметры темы.
+
+        Args:
+            primary_color (str, optional): Новый основной цвет в формате HEX.
+            font_name (str, optional): Новый шрифт заголовков.
+            bg_color (str, optional): Новый цвет фона в формате HEX.
+        """
         if primary_color and self.color_scheme:
             self.color_scheme.primary = primary_color
         if font_name and self.font_scheme:
@@ -37,6 +67,12 @@ class Theme:
             self.background.color = bg_color
 
     def to_dict(self):
+        """
+        Сериализовать тему в словарь для сохранения.
+
+        Returns:
+            dict: Словарь с параметрами темы.
+        """
         return {
             'name': self.name,
             'color_scheme': self.color_scheme.to_dict() if self.color_scheme else None,
@@ -45,7 +81,15 @@ class Theme:
 
 
 class FontScheme:
-    """Схема шрифтов: заголовки, основной текст, акценты."""
+    """
+    Схема шрифтов презентации.
+
+    Attributes:
+        heading_font (str): Шрифт заголовков.
+        body_font (str): Шрифт основного текста.
+        heading_size (int): Размер шрифта заголовков в пунктах.
+        body_size (int): Размер шрифта основного текста в пунктах.
+    """
 
     def __init__(self, heading_font='Arial', body_font='Arial',
                  heading_size=32, body_size=14):
@@ -56,6 +100,15 @@ class FontScheme:
 
     @classmethod
     def preset(cls, name):
+        """
+        Создать схему шрифтов из пресета.
+
+        Args:
+            name (str): Название пресета темы.
+
+        Returns:
+            FontScheme: Объект схемы шрифтов.
+        """
         presets = {
             'academy_blue': cls('Montserrat', 'Open Sans', 36, 14),
             'dark_stadium': cls('Bebas Neue', 'Roboto', 40, 13),
@@ -65,6 +118,12 @@ class FontScheme:
         return presets.get(name, cls())
 
     def to_dict(self):
+        """
+        Сериализовать схему шрифтов в словарь.
+
+        Returns:
+            dict: Словарь с параметрами шрифтов.
+        """
         return {
             'heading_font': self.heading_font,
             'body_font': self.body_font,

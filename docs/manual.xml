@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article>
+
+  <articleinfo>
+    <title>Видео-игра-симулятор теннисного менеджера: справочное руководство</title>
+    <author>
+      <firstname>Студент</firstname>
+      <surname>Московский</surname>
+    </author>
+    <abstract>
+      <para>
+        Справочное руководство для программистов по проекту «Видео-игра-симулятор
+        теннисного менеджера». Описывает все модули проекта, их классы, атрибуты
+        и методы с примерами использования.
+      </para>
+    </abstract>
+  </articleinfo>
+
+  <!-- ============================================================ -->
+  <section>
+    <title>Описание проекта</title>
+    <para>
+      Проект представляет собой менеджерскую симуляцию теннисной академии.
+      Пользователь управляет академией, тренирует игроков, участвует в турнирах
+      и развивает инфраструктуру. Архитектура модульная и разделена на три группы:
+      пользовательский интерфейс, ядро слайдов презентации и контент с дизайном.
+    </para>
+    <para>
+      Модули сгруппированы по трём веткам репозитория:
+      <emphasis>ui-project</emphasis>, <emphasis>slide-core</emphasis>
+      и <emphasis>content-design</emphasis>.
+    </para>
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <title>Группа 1: Пользовательский интерфейс (ui-project)</title>
+
+    <section>
+      <title>Модуль dashboard.py — Дашборд академии</title>
+      <para>
+        Главная панель академии. Отображает ключевые показатели:
+        бюджет, рейтинг, список игроков и ближайшие турниры.
+      </para>
+      <section>
+        <title>Класс AcademyDashboard</title>
+        <itemizedlist>
+          <listitem><para><emphasis>__init__(academy)</emphasis> — инициализация с объектом академии.</para></listitem>
+          <listitem><para><emphasis>load()</emphasis> — загрузить данные и инициализировать виджеты.</para></listitem>
+          <listitem><para><emphasis>refresh()</emphasis> — обновить все виджеты актуальными данными.</para></listitem>
+          <listitem><para><emphasis>render()</emphasis> — отрисовать дашборд на экране.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+dashboard = AcademyDashboard(academy)
+dashboard.load()
+dashboard.render()
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль tournament_calendar.py — Календарь турниров</title>
+      <para>
+        Панель с расписанием турниров. Отображает календарную сетку
+        с отмеченными датами событий.
+      </para>
+      <section>
+        <title>Класс TournamentCalendar</title>
+        <itemizedlist>
+          <listitem><para><emphasis>show_month(month, year)</emphasis> — отобразить турниры за месяц.</para></listitem>
+          <listitem><para><emphasis>on_event_click(tournament)</emphasis> — открыть карточку турнира.</para></listitem>
+          <listitem><para><emphasis>navigate(direction)</emphasis> — переключить месяц (+1 / -1).</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+calendar = TournamentCalendar(academy.schedule)
+calendar.show_month(7, 2024)
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль scouting_panel.py — Панель скаутинга</title>
+      <para>
+        Панель поиска и оценки новых игроков. Поддерживает фильтрацию
+        по позиции, возрасту, рейтингу и региону.
+      </para>
+      <section>
+        <title>Класс ScoutingPanel</title>
+        <itemizedlist>
+          <listitem><para><emphasis>set_filter(...)</emphasis> — установить фильтры поиска.</para></listitem>
+          <listitem><para><emphasis>search()</emphasis> — запустить поиск игроков.</para></listitem>
+          <listitem><para><emphasis>recruit(player)</emphasis> — предложить контракт игроку.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+panel = ScoutingPanel(scout_service)
+panel.set_filter(position='defender', min_rating=70)
+panel.search()
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль properties_panel.py — Панель свойств</title>
+      <para>
+        Детальные карточки игрока и академии с характеристиками,
+        статистикой и финансовыми показателями.
+      </para>
+      <section>
+        <title>Класс PlayerPropertiesPanel</title>
+        <itemizedlist>
+          <listitem><para><emphasis>show()</emphasis> — отобразить карточку игрока.</para></listitem>
+          <listitem><para><emphasis>edit()</emphasis> — перейти в режим редактирования.</para></listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Класс AcademyPropertiesPanel</title>
+        <itemizedlist>
+          <listitem><para><emphasis>show()</emphasis> — отобразить панель свойств академии.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль toolbar.py — Тулбар навигации</title>
+      <para>
+        Главный тулбар с вкладками: Главная, Игроки, Турниры,
+        Тренировки, Финансы, Инфраструктура.
+      </para>
+      <section>
+        <title>Класс MainToolbar</title>
+        <itemizedlist>
+          <listitem><para><emphasis>render()</emphasis> — отрисовать тулбар.</para></listitem>
+          <listitem><para><emphasis>on_tab_click(tab_name)</emphasis> — переключить вкладку.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+toolbar = MainToolbar(app)
+toolbar.on_tab_click('Турниры')
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль career_manager.py — Менеджер карьеры</title>
+      <para>
+        Управление карьерой: создание, сохранение, загрузка
+        и доступ к состоянию симуляции.
+      </para>
+      <section>
+        <title>Класс CareerManager</title>
+        <itemizedlist>
+          <listitem><para><emphasis>new_career(academy_name, manager_name, difficulty)</emphasis> — создать карьеру.</para></listitem>
+          <listitem><para><emphasis>save(filepath)</emphasis> — сохранить карьеру в файл.</para></listitem>
+          <listitem><para><emphasis>load(filepath)</emphasis> — загрузить карьеру из файла.</para></listitem>
+          <listitem><para><emphasis>get_simulation_state()</emphasis> — получить состояние симуляции.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+manager = CareerManager()
+career = manager.new_career('Звёздная академия', 'Иванов', 'normal')
+manager.save('save1.json')
+        </programlisting>
+      </section>
+      <section>
+        <title>Класс Career</title>
+        <itemizedlist>
+          <listitem><para><emphasis>initialize()</emphasis> — инициализировать стартовый состав и расписание.</para></listitem>
+          <listitem><para><emphasis>to_dict()</emphasis> — сериализовать карьеру в словарь.</para></listitem>
+          <listitem><para><emphasis>from_dict(data)</emphasis> — восстановить карьеру из словаря.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <title>Группа 2: Ядро слайдов (slide-core)</title>
+
+    <section>
+      <title>Модуль slide.py — Слайд презентации</title>
+      <para>
+        Базовый класс слайда. Хранит элементы контента, ссылки
+        на макет и мастер-слайд, заметки докладчика.
+      </para>
+      <section>
+        <title>Класс Slide</title>
+        <itemizedlist>
+          <listitem><para><emphasis>add_element(element)</emphasis> — добавить элемент на слайд.</para></listitem>
+          <listitem><para><emphasis>remove_element(element_id)</emphasis> — удалить элемент по id.</para></listitem>
+          <listitem><para><emphasis>get_element(element_id)</emphasis> — найти элемент по id.</para></listitem>
+          <listitem><para><emphasis>apply_layout(layout)</emphasis> — применить макет.</para></listitem>
+          <listitem><para><emphasis>apply_master(master)</emphasis> — привязать мастер-слайд.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать слайд.</para></listitem>
+          <listitem><para><emphasis>to_dict()</emphasis> — сериализовать в словарь.</para></listitem>
+          <listitem><para><emphasis>from_dict(data, layout_registry, master_registry)</emphasis> — восстановить из словаря.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+slide = Slide(slide_id=1)
+slide.add_element(TextBlock('t1', 'Итоги сезона'))
+slide.render(context)
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль layout.py — Макеты слайдов</title>
+      <para>
+        Определяет расположение placeholder-зон на слайде.
+        Поддерживает типы: title, title_content, two_column,
+        stats_table, player_card, tournament_result, blank.
+      </para>
+      <section>
+        <title>Класс SlideLayout</title>
+        <itemizedlist>
+          <listitem><para><emphasis>add_placeholder(placeholder)</emphasis> — добавить зону-заполнитель.</para></listitem>
+          <listitem><para><emphasis>apply_to(slide)</emphasis> — применить макет к слайду.</para></listitem>
+          <listitem><para><emphasis>render_placeholders(context)</emphasis> — отрисовать рамки зон.</para></listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Класс Placeholder</title>
+        <itemizedlist>
+          <listitem><para><emphasis>attach_to_slide(slide)</emphasis> — зарегистрировать на слайде.</para></listitem>
+          <listitem><para><emphasis>render_outline(context)</emphasis> — нарисовать пунктирную рамку.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль master_slide.py — Мастер-слайд</title>
+      <para>
+        Глобальное оформление презентации: фон, цвета, шрифты,
+        логотип академии и нижний колонтитул.
+      </para>
+      <section>
+        <title>Класс MasterSlide</title>
+        <itemizedlist>
+          <listitem><para><emphasis>add_layout(layout)</emphasis> — добавить дочерний макет.</para></listitem>
+          <listitem><para><emphasis>get_layout(layout_type)</emphasis> — найти макет по типу.</para></listitem>
+          <listitem><para><emphasis>apply_theme(theme)</emphasis> — применить тему оформления.</para></listitem>
+          <listitem><para><emphasis>render_background(context)</emphasis> — отрисовать фон и логотип.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+master = MasterSlide('m1', 'Academy Blue')
+theme = Theme.from_preset('academy_blue')
+master.apply_theme(theme)
+        </programlisting>
+      </section>
+      <section>
+        <title>Класс SlideManager</title>
+        <itemizedlist>
+          <listitem><para><emphasis>add_slide(slide, position)</emphasis> — добавить слайд.</para></listitem>
+          <listitem><para><emphasis>remove_slide(slide_id)</emphasis> — удалить слайд.</para></listitem>
+          <listitem><para><emphasis>move_slide(slide_id, new_position)</emphasis> — переместить слайд.</para></listitem>
+          <listitem><para><emphasis>duplicate_slide(slide_id)</emphasis> — дублировать слайд.</para></listitem>
+          <listitem><para><emphasis>get_visible_slides()</emphasis> — получить видимые слайды.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+  </section>
+
+  <!-- ============================================================ -->
+  <section>
+    <title>Группа 3: Контент и дизайн (content-design)</title>
+
+    <section>
+      <title>Модуль text_block.py — Текстовый блок</title>
+      <para>Текстовый элемент для заголовков, абзацев и подписей.</para>
+      <section>
+        <title>Класс TextBlock</title>
+        <itemizedlist>
+          <listitem><para><emphasis>set_style(...)</emphasis> — применить стиль (шрифт, размер, цвет, выравнивание).</para></listitem>
+          <listitem><para><emphasis>set_text(text)</emphasis> — обновить текст.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать блок.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+tb = TextBlock('t1', 'Итоги сезона 2024', x=50, y=30)
+tb.set_style(font_size=32, bold=True, color='#1A3C6E')
+tb.render(context)
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль image.py — Изображение</title>
+      <para>Фото игроков, логотипы, тактические схемы.</para>
+      <section>
+        <title>Класс Image</title>
+        <itemizedlist>
+          <listitem><para><emphasis>load()</emphasis> — загрузить изображение в память.</para></listitem>
+          <listitem><para><emphasis>set_crop(left, top, right, bottom)</emphasis> — задать обрезку.</para></listitem>
+          <listitem><para><emphasis>resize(width, height, keep_aspect)</emphasis> — изменить размер.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать изображение.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль shape.py — Фигуры</title>
+      <para>Геометрические фигуры для тактических схем и оформления.</para>
+      <section>
+        <title>Класс Shape</title>
+        <itemizedlist>
+          <listitem><para><emphasis>set_fill(color, opacity)</emphasis> — задать заливку.</para></listitem>
+          <listitem><para><emphasis>set_border(color, width)</emphasis> — задать рамку.</para></listitem>
+          <listitem><para><emphasis>rotate(angle)</emphasis> — повернуть фигуру.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать фигуру.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль table.py — Таблица</title>
+      <para>Таблицы статистики игроков и результатов турниров.</para>
+      <section>
+        <title>Класс Table</title>
+        <itemizedlist>
+          <listitem><para><emphasis>set_cell(row, col, value, ...)</emphasis> — установить значение ячейки.</para></listitem>
+          <listitem><para><emphasis>load_from_data(headers, rows_data)</emphasis> — заполнить из данных.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать таблицу.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+table = Table('tbl1', rows=5, cols=4, x=50, y=100)
+table.load_from_data(
+    ['Игрок', 'Очки', 'Победы', 'Рейтинг'],
+    [['Иванов', 1200, 15, 82], ['Петров', 980, 11, 74]]
+)
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль audio.py — Аудио</title>
+      <para>Звуковое сопровождение слайдов: гимн академии, эффекты.</para>
+      <section>
+        <title>Класс Audio</title>
+        <itemizedlist>
+          <listitem><para><emphasis>play()</emphasis> — начать воспроизведение.</para></listitem>
+          <listitem><para><emphasis>pause()</emphasis> — поставить на паузу.</para></listitem>
+          <listitem><para><emphasis>stop()</emphasis> — остановить и перемотать.</para></listitem>
+          <listitem><para><emphasis>set_volume(volume)</emphasis> — установить громкость (0.0–1.0).</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль video.py — Видео</title>
+      <para>Видеозаписи на слайдах: нарезки голов, обзоры турниров.</para>
+      <section>
+        <title>Класс Video</title>
+        <itemizedlist>
+          <listitem><para><emphasis>play()</emphasis> — начать воспроизведение.</para></listitem>
+          <listitem><para><emphasis>seek(seconds)</emphasis> — перемотать на позицию.</para></listitem>
+          <listitem><para><emphasis>set_trim(start, end)</emphasis> — задать диапазон воспроизведения.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать видео или постер.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль theme.py — Тема оформления</title>
+      <para>
+        Объединяет цветовую схему, шрифты и фон в единый стилевой пакет.
+        Пресеты: academy_blue, dark_stadium, clean_white, trophy_gold.
+      </para>
+      <section>
+        <title>Класс Theme</title>
+        <itemizedlist>
+          <listitem><para><emphasis>from_preset(preset_name)</emphasis> — создать тему из пресета.</para></listitem>
+          <listitem><para><emphasis>apply_to_master(master)</emphasis> — применить к мастер-слайду.</para></listitem>
+          <listitem><para><emphasis>customize(...)</emphasis> — точечно изменить параметры.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+theme = Theme.from_preset('dark_stadium')
+theme.apply_to_master(master)
+        </programlisting>
+      </section>
+      <section>
+        <title>Класс FontScheme</title>
+        <itemizedlist>
+          <listitem><para><emphasis>preset(name)</emphasis> — создать схему шрифтов из пресета.</para></listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль color_scheme.py — Цветовая схема</title>
+      <para>
+        Цветовая палитра: основной, вторичный, акцентный цвета,
+        а также цвета результатов (победа, поражение, ничья).
+      </para>
+      <section>
+        <title>Класс ColorScheme</title>
+        <itemizedlist>
+          <listitem><para><emphasis>preset(name)</emphasis> — создать схему из пресета.</para></listitem>
+          <listitem><para><emphasis>get_result_color(result)</emphasis> — получить цвет по результату матча.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+cs = ColorScheme.preset('academy_blue')
+color = cs.get_result_color('win')  # '#4CAF50'
+        </programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Модуль background.py — Фон слайда</title>
+      <para>
+        Фон слайда: сплошной цвет, градиент, изображение или паттерн.
+      </para>
+      <section>
+        <title>Класс Background</title>
+        <itemizedlist>
+          <listitem><para><emphasis>solid(color)</emphasis> — создать сплошной фон.</para></listitem>
+          <listitem><para><emphasis>gradient(start, end, angle)</emphasis> — создать градиентный фон.</para></listitem>
+          <listitem><para><emphasis>from_image(src, opacity)</emphasis> — создать фон из изображения.</para></listitem>
+          <listitem><para><emphasis>preset(name)</emphasis> — создать фон из пресета темы.</para></listitem>
+          <listitem><para><emphasis>render(context)</emphasis> — отрисовать фон.</para></listitem>
+        </itemizedlist>
+        <programlisting language="python">
+bg = Background.gradient('#0D0D0D', '#1A1A2E', angle=180)
+bg.render(context)
+        </programlisting>
+      </section>
+    </section>
+
+  </section>
+
+</article>
