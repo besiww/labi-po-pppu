@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Видео-игра-симулятор теннисного менеджера  
 
 
@@ -88,4 +88,4 @@
 =======
 # labi-po-pppu
 ## UI Project branchgit add README.md
->>>>>>> ui-project
+
